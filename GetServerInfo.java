@@ -1,3 +1,6 @@
+// This class makes the GUI where the users enter the IP, PORT, etc...
+// This class is called for every new user
+
 import java.awt.GridLayout;
 
 import javax.swing.JFrame;
