@@ -71,6 +71,10 @@ public class NewChatClient {
         );
     }
     
+    
+    
+    // THIS FUNCTION DOES THE SAME THING AS THE GetServerInfo class, which is why we don't need to use this
+    
     //    private String[] getServerInfo() 
 //    {
 //    	JTextField ip = new JTextField(5);
