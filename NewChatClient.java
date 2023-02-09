@@ -71,47 +71,47 @@ public class NewChatClient {
         );
     }
     
-    private String[] getServerInfo() 
-    {
-    	JTextField ip = new JTextField(5);
-    	JTextField port = new JTextField(5);
-    	JTextField my_ip = new JTextField(5);
-    	JTextField my_port = new JTextField(5);
-    	JPanel myPanel = new JPanel(new GridLayout(4, 1));
-    	myPanel.add(new JLabel("Enter the server ip:"));
-    	myPanel.add(ip);
-    	myPanel.add(new JLabel("Enter the server port:"));
-    	myPanel.add(port);
-    	myPanel.add(new JLabel("Enter your ip address:"));
-    	myPanel.add(my_ip);
-    	myPanel.add(new JLabel("Enter your port(optional):"));
-    	myPanel.add(my_port);
-    	
-    	String[] vals = new String[4];
-    	
-    	int result = JOptionPane.showConfirmDialog(frame, myPanel, 
-	               "Please Enter Details", JOptionPane.OK_CANCEL_OPTION);
-    	
-    	if (result == JOptionPane.OK_OPTION) {
-	         vals[0] = ip.getText();
-	         vals[1] = port.getText();
-	         vals[2] = my_ip.getText();
-	      }
-    	
-    	String port_option = my_port.getText();
-    	
-    	if (port_option != null)
-    	{
-    		vals[3] = port_option;
-    	}
-    	   	
-    	return vals;
-    	
-    }
+    //    private String[] getServerInfo() 
+//    {
+//    	JTextField ip = new JTextField(5);
+//    	JTextField port = new JTextField(5);
+//    	JTextField my_ip = new JTextField(5);
+//    	JTextField my_port = new JTextField(5);
+//    	JPanel myPanel = new JPanel(new GridLayout(4, 1));
+//	myPanel.add(new JLabel("Enter the server ip:"));
+//	myPanel.add(ip);
+//	myPanel.add(new JLabel("Enter the server port:"));
+//	myPanel.add(port);
+//	myPanel.add(new JLabel("Enter your ip address:"));
+//	myPanel.add(my_ip);
+//	myPanel.add(new JLabel("Enter your port(optional):"));
+//	myPanel.add(my_port);
+//	
+//	String[] vals = new String[4];
+//	
+//	int result = JOptionPane.showConfirmDialog(frame, myPanel, 
+//               "Please Enter Details", JOptionPane.OK_CANCEL_OPTION);
+//	
+//	if (result == JOptionPane.OK_OPTION) {
+//         vals[0] = ip.getText();
+//         vals[1] = port.getText();
+//         vals[2] = my_ip.getText();
+//      }
+//	
+//	String port_option = my_port.getText();
+//	
+//	if (port_option != null)
+//	{
+//		vals[3] = port_option;
+//	}
+//	   	
+//	return vals;
+//    	
+//    }
 
     private void run() throws IOException {
         try {
-        	String[] server = getServerInfo();
+        	String[] server = new GetServerInfo().getServerInfo(frame);
         	String ip = server[0];
         	int port = Integer.parseInt(server[1]);
             Socket socket = new Socket(ip, port);
