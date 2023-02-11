@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.JFrame;
@@ -13,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -36,6 +38,7 @@ public class NewChatClient {
     JFrame frame = new JFrame("Chatter");
     JTextField textField = new JTextField(50);
     JTextArea messageArea = new JTextArea(16, 50);
+    DisplayClients panel = new DisplayClients();
 
     /**
      * Constructs the client by laying out the GUI and registering a listener with the
@@ -45,12 +48,15 @@ public class NewChatClient {
      * the server.
      */
     public NewChatClient() {
-//        this.serverAddress = serverAddress;
 
         textField.setEditable(false);
         messageArea.setEditable(false);
+        
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        		new JScrollPane(messageArea), panel.getPanel());
+        splitPane.setResizeWeight(0.5);
+        frame.getContentPane().add(splitPane, BorderLayout.CENTER);
         frame.getContentPane().add(textField, BorderLayout.SOUTH);
-        frame.getContentPane().add(new JScrollPane(messageArea), BorderLayout.CENTER);
         frame.pack();
 
         // Send on enter then clear to prepare for next message
@@ -71,66 +77,30 @@ public class NewChatClient {
         );
     }
     
-    
-    
-    // THIS FUNCTION DOES THE SAME THING AS THE GetServerInfo class, which is why we don't need to use this
-    
-    //    private String[] getServerInfo() 
-//    {
-//    	JTextField ip = new JTextField(5);
-//    	JTextField port = new JTextField(5);
-//    	JTextField my_ip = new JTextField(5);
-//    	JTextField my_port = new JTextField(5);
-//    	JPanel myPanel = new JPanel(new GridLayout(4, 1));
-//	myPanel.add(new JLabel("Enter the server ip:"));
-//	myPanel.add(ip);
-//	myPanel.add(new JLabel("Enter the server port:"));
-//	myPanel.add(port);
-//	myPanel.add(new JLabel("Enter your ip address:"));
-//	myPanel.add(my_ip);
-//	myPanel.add(new JLabel("Enter your port(optional):"));
-//	myPanel.add(my_port);
-//	
-//	String[] vals = new String[4];
-//	
-//	int result = JOptionPane.showConfirmDialog(frame, myPanel, 
-//               "Please Enter Details", JOptionPane.OK_CANCEL_OPTION);
-//	
-//	if (result == JOptionPane.OK_OPTION) {
-//         vals[0] = ip.getText();
-//         vals[1] = port.getText();
-//         vals[2] = my_ip.getText();
-//      }
-//	
-//	String port_option = my_port.getText();
-//	
-//	if (port_option != null)
-//	{
-//		vals[3] = port_option;
-//	}
-//	   	
-//	return vals;
-//    	
-//    }
-
     private void run() throws IOException {
         try {
+        	ActiveClients active = ActiveClients.getInstance();
         	String[] server = new GetServerInfo().getServerInfo(frame);
         	String ip = server[0];
         	int port = Integer.parseInt(server[1]);
             Socket socket = new Socket(ip, port);
             in = new Scanner(socket.getInputStream());
             out = new PrintWriter(socket.getOutputStream(), true);
+            String id = "";
 
             while (in.hasNextLine()) {
                 String line = in.nextLine();
                 if (line.startsWith("SUBMITNAME")) {
-                    out.println(getName());
+                	id = getName();
+                    out.println(id);
                 } else if (line.startsWith("NAMEACCEPTED")) {
+                	active.appendDetails(id, server[2]);
                     this.frame.setTitle("Chatter - " + line.substring(13));
                     textField.setEditable(true);
+                    panel.displayUsers();
                 } else if (line.startsWith("MESSAGE")) {
                     messageArea.append(line.substring(8) + "\n");
+                    panel.displayUsers();
                 }
             }
         } finally {
@@ -140,10 +110,7 @@ public class NewChatClient {
     }
 
     public static void main(String[] args) throws Exception {
-//        if (args.length != 1) {
-//            System.err.println("Pass the server IP as the sole command line argument");
-//            return;
-//        }
+
         NewChatClient client = new NewChatClient();
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         client.frame.setVisible(true);
