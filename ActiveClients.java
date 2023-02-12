@@ -85,7 +85,6 @@ public class ActiveClients {
 	public synchronized String getLabelText()
 	{
 		StringBuilder sb = new StringBuilder();
-//		this.getSize();
 		
 		for (Map.Entry<String, String> entry : pairs.entrySet())
 		{
@@ -112,3 +111,4 @@ public class ActiveClients {
 	}
 	
 }
+
