@@ -70,7 +70,10 @@ public class NewChatServer
                 // Keep requesting a name until we get a unique one.
                 while (true) {
                     out.println("SUBMITNAME");
-                    id = in.nextLine();
+                    String details = in.nextLine();
+                    String[] parts = details.split(" ");
+                    
+                    id = parts[0];
                     if (id == null) {
                         return;
                     }
@@ -78,6 +81,7 @@ public class NewChatServer
                     	
                         if (!id.isEmpty() && active.checkID(id)==false) {
                             active.addID(id);
+                            active.appendDetails(id, parts[1]);
                             break;
                         }
                     }
