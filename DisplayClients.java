@@ -18,6 +18,7 @@ public class DisplayClients {
 	JLabel heading;
 	JLabel users;
 	JPanel panel;
+	private static ActiveClients active = ActiveClients.getInstance();
 	
 	public DisplayClients()
 	{
@@ -45,8 +46,8 @@ public class DisplayClients {
 	
 	public void displayUsers()
 	{
-		 ActiveClients active = ActiveClients.getInstance();
 		 String list = active.getLabelText();
+		 System.out.println("This is the text: " + list);
 		 users.setText(list);
 	}
 
