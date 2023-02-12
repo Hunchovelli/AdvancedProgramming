@@ -38,7 +38,7 @@ public class NewChatClient {
     JFrame frame = new JFrame("Chatter");
     JTextField textField = new JTextField(50);
     JTextArea messageArea = new JTextArea(16, 50);
-    DisplayClients panel = new DisplayClients();
+    DisplayClients user_panel = new DisplayClients();
 
     /**
      * Constructs the client by laying out the GUI and registering a listener with the
@@ -53,7 +53,7 @@ public class NewChatClient {
         messageArea.setEditable(false);
         
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-        		new JScrollPane(messageArea), panel.getPanel());
+        		new JScrollPane(messageArea), user_panel.getPanel());
         splitPane.setResizeWeight(0.5);
         frame.getContentPane().add(splitPane, BorderLayout.CENTER);
         frame.getContentPane().add(textField, BorderLayout.SOUTH);
@@ -79,7 +79,6 @@ public class NewChatClient {
     
     private void run() throws IOException {
         try {
-        	ActiveClients active = ActiveClients.getInstance();
         	String[] server = new GetServerInfo().getServerInfo(frame);
         	String ip = server[0];
         	int port = Integer.parseInt(server[1]);
@@ -92,15 +91,14 @@ public class NewChatClient {
                 String line = in.nextLine();
                 if (line.startsWith("SUBMITNAME")) {
                 	id = getName();
-                    out.println(id);
+                	String group = id + " " + ip;
+                    out.println(group);
                 } else if (line.startsWith("NAMEACCEPTED")) {
-                	active.appendDetails(id, server[2]);
                     this.frame.setTitle("Chatter - " + line.substring(13));
                     textField.setEditable(true);
-                    panel.displayUsers();
+                    user_panel.displayUsers();
                 } else if (line.startsWith("MESSAGE")) {
                     messageArea.append(line.substring(8) + "\n");
-                    panel.displayUsers();
                 }
             }
         } finally {
