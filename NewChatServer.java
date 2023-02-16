@@ -26,13 +26,21 @@ public class NewChatServer
 //
 //     // The set of all the print writers for all the clients, used for broadcast.
 //    private static Set<PrintWriter> writers = new HashSet<>();
+	
+	private static ActiveClients active = ActiveClients.getInstance();
+	
+	public static synchronized ActiveClients getInstance()
+	{
+		return active;
+	}
 
     public static void main(String[] args) throws Exception {
         System.out.println("The chat server is running...");
+//        ActiveClients active = ActiveClients.getInstance();
         ExecutorService pool = Executors.newFixedThreadPool(500);
         try (ServerSocket listener = new ServerSocket(59001)) {
             while (true) {
-                pool.execute(new Handler(listener.accept()));
+                pool.execute(new Handler(listener.accept(), active));
             }
         }
     }
@@ -45,14 +53,15 @@ public class NewChatServer
         private Socket socket;
         private Scanner in;
         private PrintWriter out;
-        ActiveClients active = ActiveClients.getInstance();
+//        private ActiveClients single;
+//        ActiveClients active = ActiveClients.getInstance();
 
         /**
          * Constructs a handler thread, squirreling away the socket. All the interesting
          * work is done in the run method. Remember the constructor is called from the
          * server's main method, so this has to be as short as possible.
          */
-        public Handler(Socket socket) {
+        public Handler(Socket socket, ActiveClients active) {
             this.socket = socket;
         }
 
