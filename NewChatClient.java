@@ -96,7 +96,7 @@ public class NewChatClient {
                 } else if (line.startsWith("NAMEACCEPTED")) {
                     this.frame.setTitle("Chatter - " + line.substring(13));
                     textField.setEditable(true);
-                    user_panel.displayUsers();
+                    user_panel.displayUsers(NewChatServer.getInstance());
                 } else if (line.startsWith("MESSAGE")) {
                     messageArea.append(line.substring(8) + "\n");
                 }
