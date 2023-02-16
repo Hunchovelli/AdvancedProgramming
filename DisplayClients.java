@@ -18,10 +18,11 @@ public class DisplayClients {
 	JLabel heading;
 	JLabel users;
 	JPanel panel;
-	private static ActiveClients active = ActiveClients.getInstance();
-	
+//	ActiveClients active;
+//	
 	public DisplayClients()
 	{
+//		this.active = active;
 		Border border = BorderFactory.createLineBorder(Color.BLACK, 1, true);
 		heading = new JLabel("Active Users");
 		heading.setBorder(border);
@@ -30,7 +31,7 @@ public class DisplayClients {
 		Font boldItalicFont = font.deriveFont(Font.BOLD | Font.ITALIC, 20f);
 		heading.setFont(boldItalicFont);
 		
-		users = new JLabel();
+		users = new JLabel("Sample text\n Sample text");
 		
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
@@ -44,7 +45,7 @@ public class DisplayClients {
 		return panel;
 	}
 	
-	public void displayUsers()
+	public void displayUsers(ActiveClients active)
 	{
 		 String list = active.getLabelText();
 		 System.out.println("This is the text: " + list);
