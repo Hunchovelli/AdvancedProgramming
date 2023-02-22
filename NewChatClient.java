@@ -3,12 +3,15 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,7 +41,7 @@ public class NewChatClient {
     JFrame frame = new JFrame("Chatter");
     JTextField textField = new JTextField(50);
     JTextArea messageArea = new JTextArea(16, 50);
-    DisplayClients user_panel = new DisplayClients();
+    JLabel clients = new JLabel();
 
     /**
      * Constructs the client by laying out the GUI and registering a listener with the
@@ -51,10 +54,17 @@ public class NewChatClient {
 
         textField.setEditable(false);
         messageArea.setEditable(false);
+        clients.setVerticalAlignment(JLabel.TOP);
+        clients.setHorizontalAlignment(JLabel.CENTER);
         
+        // Split the window into two halves, where the left side has the chat area and the
+        // right side has the client list
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-        		new JScrollPane(messageArea), user_panel.getPanel());
+        		new JScrollPane(messageArea), clients);
+        
+        // Split the frame evenly between the two parts
         splitPane.setResizeWeight(0.5);
+        
         frame.getContentPane().add(splitPane, BorderLayout.CENTER);
         frame.getContentPane().add(textField, BorderLayout.SOUTH);
         frame.pack();
@@ -71,7 +81,7 @@ public class NewChatClient {
     private String getName() {
         return JOptionPane.showInputDialog(
             frame,
-            "Enter a 6 digit ID:",
+            "Enter a 4 digit ID:",
             "User ID selection",
             JOptionPane.PLAIN_MESSAGE
         );
@@ -79,28 +89,47 @@ public class NewChatClient {
     
     private void run() throws IOException {
         try {
+        	
+        	// Get the details provided by the client
         	String[] server = new GetServerInfo().getServerInfo(frame);
         	String ip = server[0];
+        	String user_ip = server[2];
+        	String user_port = server[3];
+        	System.out.println(user_port);
         	int port = Integer.parseInt(server[1]);
             Socket socket = new Socket(ip, port);
             in = new Scanner(socket.getInputStream());
             out = new PrintWriter(socket.getOutputStream(), true);
             String id = "";
 
+            // The input stream will be split into a list by "@"
             while (in.hasNextLine()) {
-                String line = in.nextLine();
-                if (line.startsWith("SUBMITNAME")) {
+            	String[] line = in.nextLine().split("@");
+            	
+            	
+            	System.out.println(Arrays.toString(line));
+            	
+                
+                if (line[0].equals("SUBMITNAME")) {
                 	id = getName();
-                	String group = id + " " + ip;
+                	String group = id + " " + user_ip + " " + user_port;
                     out.println(group);
-                } else if (line.startsWith("NAMEACCEPTED")) {
-                    this.frame.setTitle("Chatter - " + line.substring(13));
-                    textField.setEditable(true);
-                    user_panel.displayUsers(NewChatServer.getInstance());
-                } else if (line.startsWith("MESSAGE")) {
-                    messageArea.append(line.substring(8) + "\n");
+                    
                 }
+                
+                else if (line[0].equals("NAMEACCEPTED")) {
+                    this.frame.setTitle("Chatter - " + line[1]);
+                    textField.setEditable(true);
+                    clients.setText(line[2]);
+                } 
+                
+                else if (line[0].equals("MESSAGE")) {
+                    messageArea.append(line[1] + "\n");
+                    clients.setText(line[2]);
+                }
+                
             }
+            
         } finally {
             frame.setVisible(false);
             frame.dispose();
@@ -110,6 +139,7 @@ public class NewChatClient {
     public static void main(String[] args) throws Exception {
 
         NewChatClient client = new NewChatClient();
+        client.frame.setSize(1200, 500);
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         client.frame.setVisible(true);
         client.run();
