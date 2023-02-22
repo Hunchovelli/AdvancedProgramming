@@ -21,18 +21,22 @@ import java.util.concurrent.*;
 public class NewChatServer 
 {
 
-    // All client names, so we can check for duplicates upon registration.
-    private static Set<String> ids = new HashSet<>();
-
-     // The set of all the print writers for all the clients, used for broadcast.
-    private static Set<PrintWriter> writers = new HashSet<>();
+//    // All client names, so we can check for duplicates upon registration.
+//    private static Set<String> ids = new HashSet<>();
+//
+//     // The set of all the print writers for all the clients, used for broadcast.
+//    private static Set<PrintWriter> writers = new HashSet<>();
+	
+	// the singleton class ActiveClients is instantiated here and passed to each Thread Handler
+	private static ActiveClients active = ActiveClients.getInstance();
+	
 
     public static void main(String[] args) throws Exception {
         System.out.println("The chat server is running...");
         ExecutorService pool = Executors.newFixedThreadPool(500);
         try (ServerSocket listener = new ServerSocket(59001)) {
             while (true) {
-                pool.execute(new Handler(listener.accept()));
+                pool.execute(new Handler(listener.accept(), active));
             }
         }
     }
@@ -45,13 +49,15 @@ public class NewChatServer
         private Socket socket;
         private Scanner in;
         private PrintWriter out;
+//        private ActiveClients single;
+//        ActiveClients active = ActiveClients.getInstance();
 
         /**
          * Constructs a handler thread, squirreling away the socket. All the interesting
          * work is done in the run method. Remember the constructor is called from the
          * server's main method, so this has to be as short as possible.
          */
-        public Handler(Socket socket) {
+        public Handler(Socket socket, ActiveClients active) {
             this.socket = socket;
         }
 
@@ -69,13 +75,23 @@ public class NewChatServer
                 // Keep requesting a name until we get a unique one.
                 while (true) {
                     out.println("SUBMITNAME");
-                    id = in.nextLine();
+                    
+                    // Split the output sent by the client into an array
+                    // parts[0] --> id
+                    // parts[1] --> client ip address
+                    // parts[2] --> client port
+                    String details = in.nextLine();
+                    String[] parts = details.split(" ");
+                    
+                    id = parts[0];
                     if (id == null) {
                         return;
                     }
-                    synchronized (ids) {
-                        if (!id.isEmpty() && !ids.contains(id)) {
-                            ids.add(id);
+                    synchronized (active) {
+                    	
+                        if (!id.isEmpty() && active.checkID(id)==false) {
+                            active.addID(id);
+                            active.appendToMap(id, parts[1], parts[2]);
                             break;
                         }
                     }
@@ -84,17 +100,22 @@ public class NewChatServer
                 // Now that a successful name has been chosen, add the socket's print writer
                 // to the set of all writers so this client can receive broadcast messages.
                 // But BEFORE THAT, let everyone else know that the new person has joined!
-                out.println("NAMEACCEPTED " + "User " + id);
                 
-                if (ids.size() == 1)
+                String username = "User: " + id;
+                
+                out.println("NAMEACCEPTED" + "@" + username + "@" + active.getLabelText());
+                
+                // Checks if the client is the first person to join the server
+                if (active.idsSize() == 1)
                 {
-                	out.println("MESSAGE You have been assigned as the coordinator of this session");
+                	out.println("MESSAGE" + "@" + "You have been assigned as the coordinator of this session" + "@" + active.getLabelText());
                 }
                 
-                for (PrintWriter writer : writers) {
-                    writer.println("MESSAGE " + "User " + id + " has joined");
+                for (PrintWriter writer : active.getWriters()) {
+                    writer.println("MESSAGE" + "@" + username + " has joined" + "@" + active.getLabelText());
                 }
-                writers.add(out);
+                
+                active.addWriter(out);
 
                 // Accept messages from this client and broadcast them.
                 while (true) {
@@ -102,21 +123,22 @@ public class NewChatServer
                     if (input.toLowerCase().startsWith("/quit")) {
                         return;
                     }
-                    for (PrintWriter writer : writers) {
-                        writer.println("MESSAGE " + "User " + id + " : " + input);
+                    for (PrintWriter writer : active.getWriters()) {
+                        writer.println("MESSAGE" + "@" + username + " : " + input + "@" + active.getLabelText());
                     }
                 }
             } catch (Exception e) {
                 System.out.println(e);
             } finally {
                 if (out != null) {
-                    writers.remove(out);
+                    active.removeWriter(out);
                 }
                 if (id != null) {
                     System.out.println("User " + id + " is leaving");
-                    ids.remove(id);
-                    for (PrintWriter writer : writers) {
-                        writer.println("MESSAGE " + "User " + id + " has left");
+                    active.removeSetID(id);
+                    active.removeMapID(id);
+                    for (PrintWriter writer : active.getWriters()) {
+                        writer.println("MESSAGE" + "@" + "User " + id + " is leaving the server" + "@" + active.getLabelText());
                     }
                 }
                 try { socket.close(); } catch (IOException e) {}
