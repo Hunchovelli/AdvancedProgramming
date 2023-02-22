@@ -27,16 +27,12 @@ public class NewChatServer
 //     // The set of all the print writers for all the clients, used for broadcast.
 //    private static Set<PrintWriter> writers = new HashSet<>();
 	
+	// the singleton class ActiveClients is instantiated here and passed to each Thread Handler
 	private static ActiveClients active = ActiveClients.getInstance();
 	
-	public static synchronized ActiveClients getInstance()
-	{
-		return active;
-	}
 
     public static void main(String[] args) throws Exception {
         System.out.println("The chat server is running...");
-//        ActiveClients active = ActiveClients.getInstance();
         ExecutorService pool = Executors.newFixedThreadPool(500);
         try (ServerSocket listener = new ServerSocket(59001)) {
             while (true) {
@@ -79,6 +75,11 @@ public class NewChatServer
                 // Keep requesting a name until we get a unique one.
                 while (true) {
                     out.println("SUBMITNAME");
+                    
+                    // Split the output sent by the client into an array
+                    // parts[0] --> id
+                    // parts[1] --> client ip address
+                    // parts[2] --> client port
                     String details = in.nextLine();
                     String[] parts = details.split(" ");
                     
@@ -90,7 +91,7 @@ public class NewChatServer
                     	
                         if (!id.isEmpty() && active.checkID(id)==false) {
                             active.addID(id);
-                            active.appendDetails(id, parts[1]);
+                            active.appendToMap(id, parts[1], parts[2]);
                             break;
                         }
                     }
@@ -99,15 +100,19 @@ public class NewChatServer
                 // Now that a successful name has been chosen, add the socket's print writer
                 // to the set of all writers so this client can receive broadcast messages.
                 // But BEFORE THAT, let everyone else know that the new person has joined!
-                out.println("NAMEACCEPTED " + "User " + id);
                 
+                String username = "User: " + id;
+                
+                out.println("NAMEACCEPTED" + "@" + username + "@" + active.getLabelText());
+                
+                // Checks if the client is the first person to join the server
                 if (active.idsSize() == 1)
                 {
-                	out.println("MESSAGE You have been assigned as the coordinator of this session");
+                	out.println("MESSAGE" + "@" + "You have been assigned as the coordinator of this session" + "@" + active.getLabelText());
                 }
                 
                 for (PrintWriter writer : active.getWriters()) {
-                    writer.println("MESSAGE " + "User " + id + " has joined");
+                    writer.println("MESSAGE" + "@" + username + " has joined" + "@" + active.getLabelText());
                 }
                 
                 active.addWriter(out);
@@ -119,7 +124,7 @@ public class NewChatServer
                         return;
                     }
                     for (PrintWriter writer : active.getWriters()) {
-                        writer.println("MESSAGE " + "User " + id + " : " + input);
+                        writer.println("MESSAGE" + "@" + username + " : " + input + "@" + active.getLabelText());
                     }
                 }
             } catch (Exception e) {
@@ -133,7 +138,7 @@ public class NewChatServer
                     active.removeSetID(id);
                     active.removeMapID(id);
                     for (PrintWriter writer : active.getWriters()) {
-                        writer.println("MESSAGE " + "User " + id + " has left");
+                        writer.println("MESSAGE" + "@" + "User " + id + " is leaving the server" + "@" + active.getLabelText());
                     }
                 }
                 try { socket.close(); } catch (IOException e) {}
