@@ -18,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -40,7 +41,8 @@ public class NewChatClient {
     PrintWriter out;
     JFrame frame = new JFrame("Chatter");
     JTextField textField = new JTextField(50);
-    JTextArea messageArea = new JTextArea(16, 50);
+    JTextArea messageArea = new JTextArea(16, 30);
+    JTabbedPane tabbedChats = new JTabbedPane();
     JLabel clients = new JLabel();
 
     /**
@@ -57,13 +59,22 @@ public class NewChatClient {
         clients.setVerticalAlignment(JLabel.TOP);
         clients.setHorizontalAlignment(JLabel.CENTER);
         
+        JPanel messagePanel = new JPanel(new BorderLayout());
+    	
+    	JSplitPane msgSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+    	        new JScrollPane(messageArea), tabbedChats);
+    	
+    	msgSplit.setResizeWeight(0.2);
+    	
+    	messagePanel.add(msgSplit);
+        
         // Split the window into two halves, where the left side has the chat area and the
         // right side has the client list
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-        		new JScrollPane(messageArea), clients);
+        		messagePanel, clients);
         
         // Split the frame evenly between the two parts
-        splitPane.setResizeWeight(0.5);
+        splitPane.setResizeWeight(0.6);
         
         frame.getContentPane().add(splitPane, BorderLayout.CENTER);
         frame.getContentPane().add(textField, BorderLayout.SOUTH);
@@ -128,6 +139,25 @@ public class NewChatClient {
                     clients.setText(line[2]);
                 }
                 
+                else if (line[0].equals("PRIVATE")) {
+                	String user = line[1];
+                	int tabIndex = tabbedChats.indexOfTab(user);
+                	
+                	if (tabIndex == -1)
+                	{
+                		JPanel chat = new JPanel();
+                		JTextArea private_chat = new JTextArea(16, 30);
+                		chat.add(new JScrollPane(private_chat));
+                		tabbedChats.addTab(line[1], private_chat);
+                		tabIndex = tabbedChats.indexOfTab(user);
+                	}
+                	
+                	JTextArea private_chat = (JTextArea)tabbedChats.getComponentAt(tabIndex);
+                	private_chat.append(line[2] + "\n");
+                	
+                }
+                	
+                
             }
             
         } finally {
@@ -139,7 +169,7 @@ public class NewChatClient {
     public static void main(String[] args) throws Exception {
 
         NewChatClient client = new NewChatClient();
-        client.frame.setSize(1200, 500);
+        client.frame.setSize(1100, 350);
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         client.frame.setVisible(true);
         client.run();
