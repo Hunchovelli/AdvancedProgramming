@@ -92,6 +92,7 @@ public class NewChatServer
                         if (!id.isEmpty() && active.checkID(id)==false) {
                             active.addID(id);
                             active.appendToMap(id, parts[1], parts[2]);
+                            active.appendLink(id, out);
                             break;
                         }
                     }
@@ -123,9 +124,46 @@ public class NewChatServer
                     if (input.toLowerCase().startsWith("/quit")) {
                         return;
                     }
-                    for (PrintWriter writer : active.getWriters()) {
-                        writer.println("MESSAGE" + "@" + username + " : " + input + "@" + active.getLabelText());
+                    
+                    else if (input.toLowerCase().startsWith("/private"))
+                    {
+                    	String[] splitter = input.split(" ");
+                    	PrintWriter private_writer = active.getSpecificWriter(splitter[1]);
+                    	String recipient = "User: " + splitter[1];
+                    	String result = "";
+                    	
+                    	if(splitter.length > 2)
+                    	{
+                    		StringBuilder sb = new StringBuilder();
+                    		for (int i=2; i<splitter.length; i++)
+                    		{
+                    			sb.append(splitter[i] + " ");
+                    		}
+                    		
+                    		result = sb.toString();
+//                    		private_writer.println("PRIVATE" + "@" + "Incoming private message from user " + id);
+                        	private_writer.println("PRIVATE" + "@" + username + "@" + username + " : " + result);
+                        	out.println("PRIVATE" + "@" + recipient + "@" + username + " : " + result);
+                    	}
+                    	
+                    	else 
+                    	{
+//                    		private_writer.println("PRIVATE" + "@" + "Incoming private message from user " + id);
+                        	private_writer.println("PRIVATE" + "@" + username + " : " + result);
+                        	out.println("PRIVATE" + "@" + recipient + "@" + username + " : " + result);
+                    	}
                     }
+                    
+                    else
+                    {
+                    	for (PrintWriter writer : active.getWriters()) {
+                            writer.println("MESSAGE" + "@" + username + " : " + input + "@" + active.getLabelText());
+                        }
+                    }
+                    	
+//                    for (PrintWriter writer : active.getWriters()) {
+//                        writer.println("MESSAGE" + "@" + username + " : " + input + "@" + active.getLabelText());
+//                    }
                 }
             } catch (Exception e) {
                 System.out.println(e);
