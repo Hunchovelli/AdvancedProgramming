@@ -13,6 +13,7 @@ public class ActiveClients {
 	private Set<String> ids;
 	private Set<PrintWriter> writers;
 	private Map<String, String[]> pairs;
+	private Map<String, PrintWriter> link;
 	private static ActiveClients instance = null;
 	
 	private ActiveClients() 
@@ -26,6 +27,9 @@ public class ActiveClients {
 		
 		// Mapping of each id to their ip and port
 		pairs = new HashMap<>();
+		
+		// Mapping of each user to their specific output stream
+		link = new HashMap<>();
 	}
 	
 	// Returns active instance of the class (creates one if it hasn't already)
@@ -108,7 +112,7 @@ public class ActiveClients {
 	public synchronized String getLabelText()
 	{	
 		// Used an HTML statement here to style the text and leave two new lines after it
-		String users = "<font size=5><strong>Active Clients:</strong></font><br><br>";
+		String users = "<font size=5><strong><u>Active Clients</u></strong></font><br><br>";
 	    for (Map.Entry<String, String[]> entry : pairs.entrySet())
 	    {
 	    	String[] details = entry.getValue();
@@ -127,6 +131,16 @@ public class ActiveClients {
 	    
 	    // Format the entire string as an HTML formatted string
 	    return "<html>" + users + "</html>";
+	}
+	
+	public synchronized void appendLink(String id, PrintWriter writer)
+	{
+		link.put(id, writer);
+	}
+	
+	public synchronized PrintWriter getSpecificWriter(String id)
+	{
+		return link.get(id);
 	}
 		
 	
