@@ -68,25 +68,30 @@ public class ClientGUI extends JFrame {
     	return this;
     }
     
+    
     public JTextField getTextField()
     {
     	return textField;
     }
+    
     
     public JLabel getLabel()
     {
     	return clients;
     }
     
+    
     public JTextArea getMessageArea()
     {
     	return messageArea;
     }
     
+    
     public JTabbedPane getTabbedChats()
     {
     	return tabbedChats;
     }
+    
     
     public void createTab(String user)
     {
@@ -96,10 +101,12 @@ public class ClientGUI extends JFrame {
 		tabbedChats.addTab(user, private_chat);
     }
     
+    
     public int getTabIndex(String user)
     {
     	return tabbedChats.indexOfTab(user);
     }
+    
     
     public void appendToTab(int index, String msg, String time)
     {
@@ -107,25 +114,36 @@ public class ClientGUI extends JFrame {
     	private_chat.append("[" + time + "] " + msg + "\n");
     }
     
+    
     public void appendToMsg(String msg, String time)
     {
     	messageArea.append("[" + time + "] " + msg + "\n");
     }
+    
+    
+    public void appendGame(String msg)
+    {
+    	messageArea.append(msg + "\n");
+    }
+    
     
     public void setLabelText(String msg)
     {
     	clients.setText(msg);
     }
     
+    
     public String getTextFieldText()
     {
     	return textField.getText();
     }
     
+    
     public void setTextFieldText()
     {
     	textField.setText("");
     }
+    
     
     public String getName(JFrame frame)
     {
