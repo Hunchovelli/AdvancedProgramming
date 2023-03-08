@@ -1,29 +1,25 @@
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.PrintWriter;
-
-import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.text.html.HTMLDocument;
 
 public class ClientGUI extends JFrame {
 	
-	JTextField textField;
-    JTextArea messageArea;
-    JTabbedPane tabbedChats;
-    JLabel clients;
-    JPanel messagePanel;
-    JSplitPane msgSplit;
-    JSplitPane splitPane;
+	private JTextField textField;
+    private JTextArea messageArea;
+    private JTabbedPane tabbedChats;
+    private JLabel clients;
+    private JPanel messagePanel;
+    private JSplitPane msgSplit;
+    private JSplitPane splitPane;
     
     public ClientGUI(PrintWriter out)
     {
@@ -92,5 +88,52 @@ public class ClientGUI extends JFrame {
     	return tabbedChats;
     }
     
+    public void createTab(String user)
+    {
+    	JTextArea private_chat = new JTextArea(16, 30);
+		private_chat.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		
+		tabbedChats.addTab(user, private_chat);
+    }
     
+    public int getTabIndex(String user)
+    {
+    	return tabbedChats.indexOfTab(user);
+    }
+    
+    public void appendToTab(int index, String msg, String time)
+    {
+    	JTextArea private_chat = (JTextArea)tabbedChats.getComponentAt(index);
+    	private_chat.append("[" + time + "] " + msg + "\n");
+    }
+    
+    public void appendToMsg(String msg, String time)
+    {
+    	messageArea.append("[" + time + "] " + msg + "\n");
+    }
+    
+    public void setLabelText(String msg)
+    {
+    	clients.setText(msg);
+    }
+    
+    public String getTextFieldText()
+    {
+    	return textField.getText();
+    }
+    
+    public void setTextFieldText()
+    {
+    	textField.setText("");
+    }
+    
+    public String getName(JFrame frame)
+    {
+    	return JOptionPane.showInputDialog(
+                frame,
+                "Enter a 4 digit ID:",
+                "User ID selection",
+                JOptionPane.PLAIN_MESSAGE
+            );
+    }
 }
