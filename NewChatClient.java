@@ -113,6 +113,10 @@ public class NewChatClient {
                 	gui.appendToTab(tabIndex, line[2], time);
                 	
                 }
+                
+                else if (line[0].equals("GAME")) {
+                	gui.appendGame(line[1]);
+                }
                 	                
             }
             
