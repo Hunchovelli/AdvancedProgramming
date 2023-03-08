@@ -117,6 +117,8 @@ public class NewChatServer
                 }
                 
                 active.addWriter(out);
+                
+                TicTacToe game = new TicTacToe();
 
                 // Accept messages from this client and broadcast them.
                 while (true) {
@@ -177,7 +179,66 @@ public class NewChatServer
                         		}
                     	}
 
-                    	}}                    
+                    	}}
+                    
+                    else if (input.toLowerCase().startsWith("/game"))
+                    {
+
+                    	out.println("GAME" + "@" + game.getBoardSection(0));
+                    	out.println("GAME" + "@" + game.getBoardSection(1));
+                    	out.println("GAME" + "@" + game.getBoardSection(2));
+                    	out.println("GAME" + "@" + game.getBoardSection(3));
+                    	out.println("GAME" + "@" + game.getBoardSection(4));
+                    	
+                    	out.println("GAME" + "@" + " ");
+                    }
+                    
+                    
+                    else if (input.toLowerCase().startsWith("/play"))
+                    {
+                    	String[] splitter = input.split(" ");
+                    	int chosen_num = Integer.parseInt(splitter[1]);
+                    	
+                    	game.placeX(chosen_num, "player");
+                    	
+                    	game.placeX(chosen_num, "cpu");
+                    	
+                    	
+                    	out.println("GAME" + "@" + game.getBoardSection(0));
+                    	out.println("GAME" + "@" + game.getBoardSection(1));
+                    	out.println("GAME" + "@" + game.getBoardSection(2));
+                    	out.println("GAME" + "@" + game.getBoardSection(3));
+                    	out.println("GAME" + "@" + game.getBoardSection(4));
+                    	
+                    	
+                    	
+                    	out.println("GAME" + "@" + " ");
+                    	
+                    	String result = game.checkWinner();
+                    	
+                    	if (result.equals("tie"))
+                    	{
+                    		out.println("MESSAGE" + "@" + "The game has ended in a tie" + "@" + active.getLabelText());
+                    		out.println("MESSAGE" + "@" + "The board has been reset" + "@" + active.getLabelText());
+                    		game.resetBoard();
+                    	}
+                    	
+                    	else if (result.equals("player"))
+                    	{
+                    		out.println("MESSAGE" + "@" + "Congratulations, you have won!!" + "@" + active.getLabelText());
+                    		out.println("MESSAGE" + "@" + "The board has been reset" + "@" + active.getLabelText());
+                    		game.resetBoard();
+                    	}
+                    	
+                    	else if (result.equals("cpu"))
+                    	{
+                    		out.println("MESSAGE" + "@" + "The Server has won, unlucky" + "@" + active.getLabelText());
+                    		out.println("MESSAGE" + "@" + "The board has been reset" + "@" + active.getLabelText());
+                    		game.resetBoard();
+                    	}
+                    		
+                    }
+                    
                     
                     else
                     {
