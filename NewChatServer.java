@@ -2,8 +2,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Scanner;
 import java.util.concurrent.*;
 
@@ -102,7 +100,7 @@ public class NewChatServer
                 // to the set of all writers so this client can receive broadcast messages.
                 // But BEFORE THAT, let everyone else know that the new person has joined!
                 
-                String username = "User: " + id;
+                String username = "User " + id;
                 
                 out.println("NAMEACCEPTED" + "@" + username + "@" + active.getLabelText());
                 
@@ -127,50 +125,64 @@ public class NewChatServer
                         return;
                     }
                     
+                    
                     // Block which handles the private messaging feature of the application
                     else if (input.toLowerCase().startsWith("/private"))
                     {
                     	
                     	String[] splitter = input.split(" ");
                     	
-                    	PrintWriter private_writer = active.getSpecificWriter(splitter[1]);
+                    	String receiver = splitter[1];
                     	
-                    	if (out == private_writer)
+                    	if (active.checkID(receiver) == false)
                     	{
                     		out.println("MESSAGE" + "@" + "Invalid id entered for private messaging" + "@" + active.getLabelText());
                     	}
                     	
-                    	else {
-                    	
-                    		String recipient = "User: " + splitter[1];
-                    		String result = "";
-                    	
-                    		if(splitter.length > 2)
-                    		{
-                    			StringBuilder sb = new StringBuilder();
-                    			for (int i=2; i<splitter.length; i++)
-                    			{
-                    				sb.append(splitter[i] + " ");
-                    			}
-                    		
-                    			result = sb.toString();
-//                    			private_writer.println("PRIVATE" + "@" + "Incoming private message from user " + id);
-                    			private_writer.println("PRIVATE" + "@" + username + "@" + username + " : " + result);
-                    			out.println("PRIVATE" + "@" + recipient + "@" + username + " : " + result);
-                    		}
-                    	
-                    		else 
-                    		{
-//                    			private_writer.println("PRIVATE" + "@" + "Incoming private message from user " + id);
-                    			private_writer.println("PRIVATE" + "@" + username + " : " + result);
-                    			out.println("PRIVATE" + "@" + recipient + "@" + username + " : " + result);
-                    		}
-                    	}}
+                    	else
+                    	{
+                    		PrintWriter private_writer = active.getSpecificWriter(receiver);
+                        	
+                        	if (out == private_writer)
+                        	{
+                        		out.println("MESSAGE" + "@" + "Invalid id entered for private messaging" + "@" + active.getLabelText());
+                        	}
+                        	
+                        	else {
+                        	
+                        		String recipient = "User " + receiver;
+                        		String result = "";
+                        	
+                        		if(splitter.length > 2)
+                        		{
+                        			StringBuilder sb = new StringBuilder();
+                        			for (int i=2; i<splitter.length; i++)
+                        			{
+                        				sb.append(splitter[i] + " ");
+                        			}
+                        		
+                        			result = sb.toString();
+//                        			private_writer.println("PRIVATE" + "@" + username + "@" + username + " : " + result);
+                        			private_writer.println("PRIVATE" + "@" + username + "@" + "User " + id + " : " + result);
+//                        			out.println("PRIVATE" + "@" + recipient + "@" + username + " : " + result);
+                        			out.println("PRIVATE" + "@" + recipient + "@" + "User " + id + " : " + result);
+                        		}
+                        	
+                        		else 
+                        		{
+//                        			private_writer.println("PRIVATE" + "@" + username + " : " + result);
+//                        			out.println("PRIVATE" + "@" + recipient + "@" + username + " : " + result);
+                        			private_writer.println("PRIVATE" + "@" + username + "@" + "User " + id + " : " + result);
+                        			out.println("PRIVATE" + "@" + recipient + "@" + "User " + id + " : " + result);
+                        		}
+                    	}
+
+                    	}}                    
                     
                     else
                     {
                     	for (PrintWriter writer : active.getWriters()) {
-                            writer.println("MESSAGE" + "@" + username + " : " + input + "@" + active.getLabelText());
+                            writer.println("MESSAGE" + "@" + "User " + id + " : " + input + "@" + active.getLabelText());
                         }
                     }
                     	
