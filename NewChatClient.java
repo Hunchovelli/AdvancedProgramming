@@ -5,23 +5,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Scanner;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
-
-import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.text.html.HTMLEditorKit;
+import java.time.LocalTime;
+
 
 /**
  * A simple Swing-based client for the chat server. Graphically it is a frame with a text
@@ -49,21 +35,25 @@ public class NewChatClient {
         
         gui.getTextField().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                out.println(gui.getTextField().getText());
-                gui.getTextField().setText("");
+//                out.println(gui.getTextField().getText());
+                out.println(gui.getTextFieldText());
+//                gui.getTextField().setText("");
+                gui.setTextFieldText();
             }
         });
    
+    } 
+    
+    public String getCurrentTime()
+    {
+    	LocalTime current = LocalTime.now();
+    	String time = current.toString();
+    	String[] splitter = time.split(":");
+    	String displayTime = splitter[0] + ":" + splitter[1];
+    	return displayTime;
     }
-
-    private String getName() {
-        return JOptionPane.showInputDialog(
-            frame,
-            "Enter a 4 digit ID:",
-            "User ID selection",
-            JOptionPane.PLAIN_MESSAGE
-        );
-    }
+    
+    
     
     private void run() throws IOException {
         try {
@@ -89,7 +79,7 @@ public class NewChatClient {
             	
                 
                 if (line[0].equals("SUBMITNAME")) {
-                	id = getName();
+                	id = gui.getName(frame);
                 	String group = id + " " + user_ip + " " + user_port;
                     out.println(group);
                     
@@ -98,32 +88,29 @@ public class NewChatClient {
                 else if (line[0].equals("NAMEACCEPTED")) {
                     this.frame.setTitle("Chatter - " + line[1]);
                     gui.getTextField().setEditable(true);
-                    gui.getLabel().setText(line[2]);
+                    gui.setLabelText(line[2]);
                 } 
                 
                 else if (line[0].equals("MESSAGE")) {
                 	
-                    gui.getMessageArea().append(line[1] + "\n");     
-                    gui.getLabel().setText(line[2]);
+                	String time = getCurrentTime();
+                	gui.appendToMsg(line[1], time);
+                	gui.setLabelText(line[2]);
+                	System.out.println(getCurrentTime());
                 }
                 
                 else if (line[0].equals("PRIVATE")) {
                 	String user = line[1];
-                	int tabIndex = gui.getTabbedChats().indexOfTab(user);
+                	int tabIndex = gui.getTabIndex(user);
                 	
                 	if (tabIndex == -1)
                 	{
-                		JPanel chat = new JPanel();
-                		JTextArea private_chat = new JTextArea(16, 30);
-                		private_chat.setFont(new Font("Tahoma", Font.PLAIN, 13));
-                		chat.add(new JScrollPane(private_chat));
-                		
-                		gui.getTabbedChats().addTab(line[1], private_chat);
-                		tabIndex = gui.getTabbedChats().indexOfTab(user);
+                		gui.createTab(user);
                 	}
                 	
-                	JTextArea private_chat = (JTextArea)gui.getTabbedChats().getComponentAt(tabIndex);
-                	private_chat.append(line[2] + "\n");
+                	tabIndex = gui.getTabIndex(user);
+                	String time = getCurrentTime();
+                	gui.appendToTab(tabIndex, line[2], time);
                 	
                 }
                 	                
