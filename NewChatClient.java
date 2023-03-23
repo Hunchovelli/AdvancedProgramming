@@ -121,6 +121,12 @@ public class NewChatClient {
                 	this.frame.setTitle(line[2]);
                 }
                 
+                else if (line[0].equals("PING"))
+                {
+                	String time = getCurrentTime();
+                	gui.appendToMsg(line[1], time);
+                }
+                
                 else if (line[0].equals("GAME")) {
                 	gui.appendGame(line[1]);
                 }
