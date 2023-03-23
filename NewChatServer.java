@@ -143,7 +143,7 @@ public class NewChatServer
                 // Checks if the client is the first person to join the server
                 if (active.idsSize() == 1)
                 {
-                	out.println("MESSAGE" + "@" + "You have been assigned as the coordinator of this session" + "@" + active.getLabelText());
+                	out.println("COORDINATOR" + "@" + "You have been assigned as the coordinator of this session"+ "@" + "Chatter - User " + id + " (Coordinator)");
                 }
                 
                 for (PrintWriter writer : active.getWriters()) {
@@ -303,7 +303,7 @@ public class NewChatServer
                     		if (active.checkID(newCoordinator) == true)
                     		{
                     			PrintWriter coordinator = active.getSpecificWriter(newCoordinator);
-                    			coordinator.println("MESSAGE" + "@" + "You are now the new coordinator of the group" + "@" + active.getLabelText());
+                    			coordinator.println("COORDINATOR" + "@" + "You are now the new coordinator of the group" + "@" + "Chatter - User " + newCoordinator + " (Coordinator)");
                     			break;
                     		}
                     	}
