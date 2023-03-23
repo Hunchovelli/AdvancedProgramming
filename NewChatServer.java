@@ -124,6 +124,7 @@ public class NewChatServer
                             active.addID(id);
                             active.appendToMap(id, parts[1], parts[2]);
                             active.appendLink(id, out);
+                            active.addToQueue(id);
                             break;
                         }
                     }
@@ -290,6 +291,22 @@ public class NewChatServer
                     active.removeMapID(id);
                     for (PrintWriter writer : active.getWriters()) {
                         writer.println("MESSAGE" + "@" + "User " + id + " is leaving the server" + "@" + active.getLabelText());
+                    }
+                    
+                    if (active.checkFirst(id) == true)
+                    {
+                    	while (true)
+                    	{
+                    		active.removeCoordinator();
+                    		String newCoordinator = active.getCoordinator();
+                    		
+                    		if (active.checkID(newCoordinator) == true)
+                    		{
+                    			PrintWriter coordinator = active.getSpecificWriter(newCoordinator);
+                    			coordinator.println("MESSAGE" + "@" + "You are now the new coordinator of the group" + "@" + active.getLabelText());
+                    			break;
+                    		}
+                    	}
                     }
                 }
                 try { socket.close(); } catch (IOException e) {}
