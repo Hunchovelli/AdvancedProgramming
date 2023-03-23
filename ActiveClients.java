@@ -57,6 +57,11 @@ public class ActiveClients {
 		this.getIDSize();
 	}
 	
+	public synchronized Set<String> getIds()
+	{
+		return this.ids;
+	}
+	
 	// Add output stream of a client to writers set
 	public synchronized void addWriter(PrintWriter writer)
 	{
