@@ -286,6 +286,13 @@ public class NewChatServer
                     		}
                     	}
                     }
+                    
+                    else
+                    {
+                    	for (PrintWriter writer : active.getWriters()) {
+                            writer.println("MESSAGE" + "@" + "User " + id + " : " + input + "@" + active.getLabelText());
+                        }
+                    }
                     	
 
                 }
