@@ -269,6 +269,23 @@ public class NewChatServer
                     		
                     }
                     
+                    else if (input.toLowerCase().startsWith("/ping")) 
+                    {
+                    	String coordinator = active.getCoordinator();
+                    	for (String id : active.getIds())
+                    	{
+                    		if (id == coordinator)
+                    		{
+                    			continue;
+                    		}
+                    		
+                    		else
+                    		{
+                    			out = active.getSpecificWriter(id);
+                    			out.println("PING" + "@" + "-please respond with PONG if active");
+                    		}
+                    	}
+                    }
                     
                     else
                     {
