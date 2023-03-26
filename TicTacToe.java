@@ -1,7 +1,14 @@
+package mainApplication;
+
+// This class has been adapted from the following YouTube video: https://youtu.be/gQb3dE-y1S4
+
+// This class is used to implement the TicTacToe game that the user can play with the server
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class TicTacToe {
 	
@@ -11,8 +18,39 @@ public class TicTacToe {
 			{"---", "+", "---", "+", "---"}, 
 			{" ", "   |", " ", "   |", " "}};
 	
-	private ArrayList<Integer> playerPositions = new ArrayList<Integer>();
-	private ArrayList<Integer> cpuPositions = new ArrayList<Integer>();
+	private ArrayList<Integer> player1Positions = new ArrayList<Integer>();
+	private ArrayList<Integer> player2Positions = new ArrayList<Integer>();
+	
+	String player1;
+	String player2;
+	
+	public TicTacToe(String player1, String player2)
+	{
+		this.player1 = player1;
+		this.player2 = player2;
+	}
+	
+	public String[][] getMatrixBoard()
+	{
+		return gameBoard;
+	}
+	
+	public String getStringBoard()
+	{
+		String board = "";
+		
+		for (String[] row : gameBoard)
+		{
+			for (String symbol : row)
+			{
+				board += symbol;
+			}
+			
+			board += "\n";
+		}
+		
+		return board;
+	}
 	
 	public String getBoardSection(int index)
 	{
@@ -35,30 +73,22 @@ public class TicTacToe {
 		return section;
 	}
 	
-	public void placeX(int index, String user)
+	public void placeSign(int index, String user)
 	{
 		
 		String sign = "";
 		
-		if (user.equals("player"))
+		if (user.equals(player1))
 		{
 			sign = "X";
-			playerPositions.add(index);
+			player1Positions.add(index);
 		}
 		
-		else sign = "O";
-		
-		if (user.equals("cpu"))
+		else if (user.equals(player2)) 
 		{
-			Random rand = new Random();
-			index = rand.nextInt(9) + 1;
-			while (cpuPositions.contains(index) || playerPositions.contains(index))
-			{
-				index = rand.nextInt(9) + 1;
-			}
-//			index = rand.nextInt(9) + 1;
-			cpuPositions.add(index);
-		}
+			sign = "O";
+			player2Positions.add(index);
+		}	
 		
 		switch(index)
 		{
@@ -94,6 +124,16 @@ public class TicTacToe {
 		}
 	}
 	
+	public boolean checkifPlayed(int index)
+	{
+		if (player2Positions.contains(index) || player1Positions.contains(index))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public String checkWinner()
 	{
 		List topRow = Arrays.asList(1, 2, 3);
@@ -118,17 +158,17 @@ public class TicTacToe {
 		
 		for (List l : winning) 
 		{
-			if (playerPositions.containsAll(l))
+			if (player1Positions.containsAll(l))
 			{
-				return "player";
+				return player1;
 			}
 			
-			else if (cpuPositions.containsAll(l))
+			else if (player2Positions.containsAll(l))
 			{
-				return "cpu";
+				return player2;
 			}
 			
-			else if (playerPositions.size() + cpuPositions.size() == 9)
+			else if (player1Positions.size() + player2Positions.size() == 9)
 			{
 				return "tie";
 			}
@@ -152,40 +192,113 @@ public class TicTacToe {
 			}
 		}
 		
-		playerPositions.clear();
-		cpuPositions.clear();
+		player1Positions.clear();
+		player2Positions.clear();
 	}
 	
 	
 	
 //	public static void main(String[] args)
 //	{
-//		TicTacToe game = new TicTacToe();
-//		System.out.println(game.getBoardSection(0));
-//		System.out.println(game.getBoardSection(1));
-//		System.out.println(game.getBoardSection(2));
-//		System.out.println(game.getBoardSection(3));
-//		System.out.println(game.getBoardSection(4));
+//		Scanner players = new Scanner(System.in);
+//		System.out.println("Enter the player names:");
+//		String player1 = players.next();
+//		String player2 = players.next();
+//		
+//		Scanner position = new Scanner(System.in);
+//		
+//		TicTacToe game = new TicTacToe(player1, player2);
 //		
 //		
-//		game.placeX(4, "player");
-//		game.placeX(1, "cpu");
+//// Code stub used to fix unit test case		
+////		
+////		TicTacToe game = new TicTacToe("player1", "player2");
+////		
+//		String board = game.getStringBoard();
+//////		
+//		System.out.println(board);
+////		
+////		String expected = "    |    | \n" 
+////		                + "---+---+---\n" 
+////				        + "    |    | \n" 
+////		                + "---+---+---\n" 
+////				        + "    |    | \n";
+//////		
+////		System.out.println(expected);
+////		System.out.println(expected.equals(board));
+//		
+//		
+//		
+//		
+//		
+//		
+//		String result = "";
+//		
+//		while(true)
+//		{
+//			System.out.println("Enter a position on the board to place your piece (1-9): ");
+//			int index1 = position.nextInt();
 //			
-//		System.out.println(" ");
-//	
-//		System.out.println(game.getBoardSection(0));
-//		System.out.println(game.getBoardSection(1));
-//		System.out.println(game.getBoardSection(2));
-//		System.out.println(game.getBoardSection(3));
-//		System.out.println(game.getBoardSection(4));
+//			while(game.checkifPlayed(index1))
+//			{
+//				System.out.println("Position already played. Choose another position:");
+//				index1 = position.nextInt();
+//			}
+//			
+//			game.placeSign(index1, player1);
+//			
+//			System.out.println(game.getStringBoard());
+//			
+//			result = game.checkWinner();
+//			
+//			if (!result.equals(""))
+//			{
+//				if (result.equals("tie"))
+//				{
+//					System.out.println("the game has resulted in a tie");
+//					game.resetBoard();
+//					break;
+//				}
+//				
+//				else 
+//				{
+//					System.out.println("The winner is: " + result);
+//					game.resetBoard();
+//					break;
+//				}
 //		
-//		game.resetBoard();
+//			}
+//			
+//			
+//			System.out.println("Enter a position on the board to place your piece (1-9): ");
+//			int index2 = position.nextInt();
+//			
+//			while(game.checkifPlayed(index2))
+//			{
+//				System.out.println("Position already played. Choose another position:");
+//				index2 = position.nextInt();
+//			}
+//			
+//			game.placeSign(index2, player2);
+//			
+//			System.out.println(game.getStringBoard());
+//			
+//			result = game.checkWinner();
+//			
+//			if (!result.equals(""))
+//			{
+//				System.out.println("The winner is: " + result);
+//				game.resetBoard();
+//				break;
+//			}
+//			
+//			
+//			
+//		}
 //		
-//		System.out.println(game.getBoardSection(0));
-//		System.out.println(game.getBoardSection(1));
-//		System.out.println(game.getBoardSection(2));
-//		System.out.println(game.getBoardSection(3));
-//		System.out.println(game.getBoardSection(4));
+//		players.close();
+//		position.close();
+//		
 //		
 //	}
 

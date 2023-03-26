@@ -1,7 +1,9 @@
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 
@@ -15,6 +17,9 @@ public class ActiveClients {
 	private Map<String, String[]> pairs;
 	private Map<String, PrintWriter> link;
 	private static ActiveClients instance = null;
+	
+	// Coordinator Queue
+	private Queue<String> coordinator;
 	
 	private ActiveClients() 
 	{
@@ -30,6 +35,9 @@ public class ActiveClients {
 		
 		// Mapping of each user to their specific output stream
 		link = new HashMap<>();
+		
+		// Maintain priority of coordinator
+		coordinator = new LinkedList<>();
 	}
 	
 	// Returns active instance of the class (creates one if it hasn't already)
@@ -47,6 +55,11 @@ public class ActiveClients {
 	{
 		ids.add(id);
 		this.getIDSize();
+	}
+	
+	public synchronized Set<String> getIds()
+	{
+		return this.ids;
 	}
 	
 	// Add output stream of a client to writers set
@@ -142,7 +155,30 @@ public class ActiveClients {
 	{
 		return link.get(id);
 	}
+	
+	public synchronized void addToQueue(String id)
+	{
+		coordinator.add(id);
+	}
 		
+	public synchronized boolean checkFirst(String id)
+	{
+		if (id.equals(coordinator.peek()))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	public synchronized String getCoordinator()
+	{
+		return coordinator.peek();
+	}
+	
+	public synchronized void removeCoordinator()
+	{
+		coordinator.remove();
+	}
 	
 	public synchronized void getIDSize()
 	{

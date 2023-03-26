@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.*;
 
@@ -58,6 +59,38 @@ public class NewChatServer
         public Handler(Socket socket, ActiveClients active) {
             this.socket = socket;
         }
+        
+        
+        public boolean checkServerWinner(TicTacToe game, String result)
+        {
+        	result = game.checkWinner();
+        	
+        	if (result.equals("tie"))
+        	{
+        		out.println("MESSAGE" + "@" + "The game has ended in a tie" + "@" + active.getLabelText());
+        		out.println("MESSAGE" + "@" + "The board has been reset" + "@" + active.getLabelText());
+        		game.resetBoard();
+        		return true;
+        	}
+        	
+        	else if (result.equals("player"))
+        	{
+        		out.println("MESSAGE" + "@" + "Congratulations, you have won!!" + "@" + active.getLabelText());
+        		out.println("MESSAGE" + "@" + "The board has been reset" + "@" + active.getLabelText());
+        		game.resetBoard();
+        		return true;
+        	}
+        	
+        	else if (result.equals("cpu"))
+        	{
+        		out.println("MESSAGE" + "@" + "The Server has won, unlucky" + "@" + active.getLabelText());
+        		out.println("MESSAGE" + "@" + "The board has been reset" + "@" + active.getLabelText());
+        		game.resetBoard();
+        		return true;
+        	}
+        	
+        	return false;
+        }
 
         /**
          * Services this thread's client by repeatedly requesting a screen name until a
@@ -91,6 +124,7 @@ public class NewChatServer
                             active.addID(id);
                             active.appendToMap(id, parts[1], parts[2]);
                             active.appendLink(id, out);
+                            active.addToQueue(id);
                             break;
                         }
                     }
@@ -109,7 +143,7 @@ public class NewChatServer
                 // Checks if the client is the first person to join the server
                 if (active.idsSize() == 1)
                 {
-                	out.println("MESSAGE" + "@" + "You have been assigned as the coordinator of this session" + "@" + active.getLabelText());
+                	out.println("COORDINATOR" + "@" + "You have been assigned as the coordinator of this session"+ "@" + "Chatter - User " + id + " (Coordinator)");
                 }
                 
                 for (PrintWriter writer : active.getWriters()) {
@@ -118,7 +152,7 @@ public class NewChatServer
                 
                 active.addWriter(out);
                 
-                TicTacToe game = new TicTacToe();
+                TicTacToe game = new TicTacToe("player", "cpu");
 
                 // Accept messages from this client and broadcast them.
                 while (true) {
@@ -164,16 +198,14 @@ public class NewChatServer
                         			}
                         		
                         			result = sb.toString();
-//                        			private_writer.println("PRIVATE" + "@" + username + "@" + username + " : " + result);
+
                         			private_writer.println("PRIVATE" + "@" + username + "@" + "User " + id + " : " + result);
-//                        			out.println("PRIVATE" + "@" + recipient + "@" + username + " : " + result);
+
                         			out.println("PRIVATE" + "@" + recipient + "@" + "User " + id + " : " + result);
                         		}
                         	
                         		else 
                         		{
-//                        			private_writer.println("PRIVATE" + "@" + username + " : " + result);
-//                        			out.println("PRIVATE" + "@" + recipient + "@" + username + " : " + result);
                         			private_writer.println("PRIVATE" + "@" + username + "@" + "User " + id + " : " + result);
                         			out.println("PRIVATE" + "@" + recipient + "@" + "User " + id + " : " + result);
                         		}
@@ -196,49 +228,64 @@ public class NewChatServer
                     
                     else if (input.toLowerCase().startsWith("/play"))
                     {
+                    	String result = "";
                     	String[] splitter = input.split(" ");
                     	int chosen_num = Integer.parseInt(splitter[1]);
                     	
-                    	game.placeX(chosen_num, "player");
                     	
-                    	game.placeX(chosen_num, "cpu");
+                    	game.placeSign(chosen_num, "player");
+                           
                     	
-                    	
-                    	out.println("GAME" + "@" + game.getBoardSection(0));
-                    	out.println("GAME" + "@" + game.getBoardSection(1));
-                    	out.println("GAME" + "@" + game.getBoardSection(2));
-                    	out.println("GAME" + "@" + game.getBoardSection(3));
-                    	out.println("GAME" + "@" + game.getBoardSection(4));
+                    	boolean resetGame = this.checkServerWinner(game, result);
                     	
                     	
-                    	
+                    	if (resetGame == false)
+                    	{
+                    		Random rand = new Random();
+                			int index = rand.nextInt(9) + 1;
+                			
+                			boolean played = game.checkifPlayed(index);
+                			
+                			while(played)
+                			{
+                				index = rand.nextInt(9) + 1;
+                				played = game.checkifPlayed(index);
+                			}
+                    		
+                    		game.placeSign(index, "cpu");
+                    		
+                        	this.checkServerWinner(game, result);
+                        	
+                        	out.println("GAME" + "@" + game.getBoardSection(0));
+                        	out.println("GAME" + "@" + game.getBoardSection(1));
+                        	out.println("GAME" + "@" + game.getBoardSection(2));
+                        	out.println("GAME" + "@" + game.getBoardSection(3));
+                        	out.println("GAME" + "@" + game.getBoardSection(4));
+                    	}                	
+
+                    	                   	
                     	out.println("GAME" + "@" + " ");
                     	
-                    	String result = game.checkWinner();
-                    	
-                    	if (result.equals("tie"))
-                    	{
-                    		out.println("MESSAGE" + "@" + "The game has ended in a tie" + "@" + active.getLabelText());
-                    		out.println("MESSAGE" + "@" + "The board has been reset" + "@" + active.getLabelText());
-                    		game.resetBoard();
-                    	}
-                    	
-                    	else if (result.equals("player"))
-                    	{
-                    		out.println("MESSAGE" + "@" + "Congratulations, you have won!!" + "@" + active.getLabelText());
-                    		out.println("MESSAGE" + "@" + "The board has been reset" + "@" + active.getLabelText());
-                    		game.resetBoard();
-                    	}
-                    	
-                    	else if (result.equals("cpu"))
-                    	{
-                    		out.println("MESSAGE" + "@" + "The Server has won, unlucky" + "@" + active.getLabelText());
-                    		out.println("MESSAGE" + "@" + "The board has been reset" + "@" + active.getLabelText());
-                    		game.resetBoard();
-                    	}
                     		
                     }
                     
+                    else if (input.toLowerCase().startsWith("/ping")) 
+                    {
+                    	String coordinator = active.getCoordinator();
+                    	for (String id : active.getIds())
+                    	{
+                    		if (id == coordinator)
+                    		{
+                    			continue;
+                    		}
+                    		
+                    		else
+                    		{
+                    			out = active.getSpecificWriter(id);
+                    			out.println("PING" + "@" + "-please respond with PONG if active");
+                    		}
+                    	}
+                    }
                     
                     else
                     {
@@ -247,9 +294,7 @@ public class NewChatServer
                         }
                     }
                     	
-//                    for (PrintWriter writer : active.getWriters()) {
-//                        writer.println("MESSAGE" + "@" + username + " : " + input + "@" + active.getLabelText());
-//                    }
+
                 }
             } catch (Exception e) {
                 System.out.println(e);
@@ -263,6 +308,22 @@ public class NewChatServer
                     active.removeMapID(id);
                     for (PrintWriter writer : active.getWriters()) {
                         writer.println("MESSAGE" + "@" + "User " + id + " is leaving the server" + "@" + active.getLabelText());
+                    }
+                    
+                    if (active.checkFirst(id) == true)
+                    {
+                    	while (true)
+                    	{
+                    		active.removeCoordinator();
+                    		String newCoordinator = active.getCoordinator();
+                    		
+                    		if (active.checkID(newCoordinator) == true)
+                    		{
+                    			PrintWriter coordinator = active.getSpecificWriter(newCoordinator);
+                    			coordinator.println("COORDINATOR" + "@" + "You are now the new coordinator of the group" + "@" + "Chatter - User " + newCoordinator + " (Coordinator)");
+                    			break;
+                    		}
+                    	}
                     }
                 }
                 try { socket.close(); } catch (IOException e) {}
