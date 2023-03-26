@@ -170,6 +170,8 @@ public class NewChatServer
                     	
                     	String receiver = splitter[1];
                     	
+//                    	out = active.getSpecificWriter(id);
+                    	
                     	if (active.checkID(receiver) == false)
                     	{
                     		out.println("MESSAGE" + "@" + "Invalid id entered for private messaging" + "@" + active.getLabelText());
@@ -272,20 +274,24 @@ public class NewChatServer
                     else if (input.toLowerCase().startsWith("/ping")) 
                     {
                     	String coordinator = active.getCoordinator();
+                    	PrintWriter pong;
                     	for (String id : active.getIds())
                     	{
-                    		if (id == coordinator)
+                    		if (!(id == coordinator))
                     		{
-                    			continue;
+//                    			continue;
+                    			pong = active.getSpecificWriter(id);
+                    			pong.println("PING" + "@" + "-please respond with PONG if active");
                     		}
                     		
-                    		else
-                    		{
-                    			out = active.getSpecificWriter(id);
-                    			out.println("PING" + "@" + "-please respond with PONG if active");
-                    		}
+//                    		else
+//                    		{
+//                    			out = active.getSpecificWriter(id);
+//                    			out.println("PING" + "@" + "-please respond with PONG if active");
+//                    		}
                     	}
                     }
+                    
                     
                     else
                     {
