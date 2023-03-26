@@ -1,4 +1,6 @@
 import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -17,7 +19,9 @@ public class ActiveClients {
 	private Map<String, String[]> pairs;
 	private Map<String, PrintWriter> link;
 	private static ActiveClients instance = null;
-	
+	private Map<String, SocketAddress> idSocketAddress;
+	private Map<String, Socket> idSocket;
+
 	// Coordinator Queue
 	private Queue<String> coordinator;
 	
@@ -38,6 +42,12 @@ public class ActiveClients {
 		
 		// Maintain priority of coordinator
 		coordinator = new LinkedList<>();
+
+		// Mapping of each if to their socket addresss
+		idSocketAddress = new HashMap<>();
+
+		// Mapping of each if to their socket object
+		idSocket = new HashMap<>();
 	}
 	
 	// Returns active instance of the class (creates one if it hasn't already)
@@ -114,7 +124,19 @@ public class ActiveClients {
 		String[] details = {ip, port};
 		pairs.put(id, details);
 	}
-	
+
+	// Add new clients id and socket object to a map
+	// Id will be the key and the value is the socket address for the client
+	public synchronized void appendToIdSocketAddress(String id, SocketAddress socketAddress)
+	{
+		idSocketAddress.put(id, socketAddress);
+	}
+	// Add new clients id and socket object to a map
+	// Id will be the key and the value is the socket object for the client
+	public synchronized void appendToIdSocket(String id, Socket socket)
+	{
+		idSocket.put(id, socket);
+	}
 	// Remove an entry from the map
 	public synchronized void removeMapID(String id)
 	{
@@ -195,6 +217,16 @@ public class ActiveClients {
 	public synchronized void getPairsSize()
 	{
 		System.out.println(pairs.size());
+	}
+
+	public synchronized SocketAddress getIdSocketAddress(String id)
+	{
+		return idSocketAddress.get(id);
+	}
+
+	public synchronized Socket getIdSocket(String id)
+	{
+		return idSocket.get(id);
 	}
 	
 }

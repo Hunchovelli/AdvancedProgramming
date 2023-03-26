@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.*;
@@ -103,6 +104,8 @@ public class NewChatServer
                 in = new Scanner(socket.getInputStream());
                 out = new PrintWriter(socket.getOutputStream(), true);
 
+                SocketAddress remoteAddress = socket.getRemoteSocketAddress(); 
+
                 // Keep requesting a name until we get a unique one.
                 while (true) {
                     out.println("SUBMITNAME");
@@ -125,6 +128,8 @@ public class NewChatServer
                             active.appendToMap(id, parts[1], parts[2]);
                             active.appendLink(id, out);
                             active.addToQueue(id);
+                            active.appendToIdSocketAddress(id, socket.getRemoteSocketAddress());
+                            active.appendToIdSocket(id, socket);
                             break;
                         }
                     }
@@ -274,19 +279,32 @@ public class NewChatServer
                     	String coordinator = active.getCoordinator();
                     	for (String id : active.getIds())
                     	{
-                    		if (id == coordinator)
-                    		{
+                    		if (id == coordinator){
                     			continue;
                     		}
                     		
-                    		else
-                    		{
+                    		else{
                     			out = active.getSpecificWriter(id);
                     			out.println("PING" + "@" + "-please respond with PONG if active");
                     		}
                     	}
                     }
-                    
+
+                    else if (input.toLowerCase().startsWith("/kick")){
+                        String coordinator = active.getCoordinator();
+                        SocketAddress coordinatorSocketAddress = active.getIdSocketAddress(coordinator);
+
+                        String [] splitter = input.split( " ");
+                        String user = splitter[1];
+
+                        if (remoteAddress == coordinatorSocketAddress){
+                            active.getIdSocket(user).close();
+                        } else {
+                            out = active.getSpecificWriter(id);
+                    		out.println("KICK" + "@" + "- only coordinator can kick");
+                        }    
+                    }
+
                     else
                     {
                     	for (PrintWriter writer : active.getWriters()) {
