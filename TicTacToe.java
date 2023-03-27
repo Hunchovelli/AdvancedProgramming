@@ -196,108 +196,108 @@ public class TicTacToe {
 	
 	
 	
-	public static void main(String[] args)
-	{
-		Scanner players = new Scanner(System.in);
-		System.out.println("Enter the player names:");
-		String player1 = players.next();
-		String player2 = players.next();
-		
-		Scanner position = new Scanner(System.in);
-		
-		TicTacToe game = new TicTacToe(player1, player2);
-		
-		
-// Code stub used to fix unit test case		
+//	public static void main(String[] args)
+//	{
+//		Scanner players = new Scanner(System.in);
+//		System.out.println("Enter the player names:");
+//		String player1 = players.next();
+//		String player2 = players.next();
 //		
-//		TicTacToe game = new TicTacToe("player1", "player2");
+//		Scanner position = new Scanner(System.in);
 //		
-		String board = game.getStringBoard();
+//		TicTacToe game = new TicTacToe(player1, player2);
+//		
+//		
+//// Code stub used to fix unit test case		
 ////		
-		System.out.println(board);
-//		
-//		String expected = "    |    | \n" 
-//		                + "---+---+---\n" 
-//				        + "    |    | \n" 
-//		                + "---+---+---\n" 
-//				        + "    |    | \n";
+////		TicTacToe game = new TicTacToe("player1", "player2");
 ////		
-//		System.out.println(expected);
-//		System.out.println(expected.equals(board));
-		
-		
-		
-		
-		
-		
-		String result = "";
-		
-		while(true)
-		{
-			System.out.println("Enter a position on the board to place your piece (1-9): ");
-			int index1 = position.nextInt();
-			
-			while(game.checkifPlayed(index1))
-			{
-				System.out.println("Position already played. Choose another position:");
-				index1 = position.nextInt();
-			}
-			
-			game.placeSign(index1, player1);
-			
-			System.out.println(game.getStringBoard());
-			
-			result = game.checkWinner();
-			
-			if (!result.equals(""))
-			{
-				if (result.equals("tie"))
-				{
-					System.out.println("the game has resulted in a tie");
-					game.resetBoard();
-					break;
-				}
-				
-				else 
-				{
-					System.out.println("The winner is: " + result);
-					game.resetBoard();
-					break;
-				}
-		
-			}
-			
-			
-			System.out.println("Enter a position on the board to place your piece (1-9): ");
-			int index2 = position.nextInt();
-			
-			while(game.checkifPlayed(index2))
-			{
-				System.out.println("Position already played. Choose another position:");
-				index2 = position.nextInt();
-			}
-			
-			game.placeSign(index2, player2);
-			
-			System.out.println(game.getStringBoard());
-			
-			result = game.checkWinner();
-			
-			if (!result.equals(""))
-			{
-				System.out.println("The winner is: " + result);
-				game.resetBoard();
-				break;
-			}
-			
-			
-			
-		}
-		
-		players.close();
-		position.close();
-		
-		
-	}
+//		String board = game.getStringBoard();
+//////		
+//		System.out.println(board);
+////		
+////		String expected = "    |    | \n" 
+////		                + "---+---+---\n" 
+////				        + "    |    | \n" 
+////		                + "---+---+---\n" 
+////				        + "    |    | \n";
+//////		
+////		System.out.println(expected);
+////		System.out.println(expected.equals(board));
+//		
+//		
+//		
+//		
+//		
+//		
+//		String result = "";
+//		
+//		while(true)
+//		{
+//			System.out.println("Enter a position on the board to place your piece (1-9): ");
+//			int index1 = position.nextInt();
+//			
+//			while(game.checkifPlayed(index1))
+//			{
+//				System.out.println("Position already played. Choose another position:");
+//				index1 = position.nextInt();
+//			}
+//			
+//			game.placeSign(index1, player1);
+//			
+//			System.out.println(game.getStringBoard());
+//			
+//			result = game.checkWinner();
+//			
+//			if (!result.equals(""))
+//			{
+//				if (result.equals("tie"))
+//				{
+//					System.out.println("the game has resulted in a tie");
+//					game.resetBoard();
+//					break;
+//				}
+//				
+//				else 
+//				{
+//					System.out.println("The winner is: " + result);
+//					game.resetBoard();
+//					break;
+//				}
+//		
+//			}
+//			
+//			
+//			System.out.println("Enter a position on the board to place your piece (1-9): ");
+//			int index2 = position.nextInt();
+//			
+//			while(game.checkifPlayed(index2))
+//			{
+//				System.out.println("Position already played. Choose another position:");
+//				index2 = position.nextInt();
+//			}
+//			
+//			game.placeSign(index2, player2);
+//			
+//			System.out.println(game.getStringBoard());
+//			
+//			result = game.checkWinner();
+//			
+//			if (!result.equals(""))
+//			{
+//				System.out.println("The winner is: " + result);
+//				game.resetBoard();
+//				break;
+//			}
+//			
+//			
+//			
+//		}
+//		
+//		players.close();
+//		position.close();
+//		
+//		
+//	}
 
 }

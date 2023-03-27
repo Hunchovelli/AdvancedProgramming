@@ -234,42 +234,48 @@ public class NewChatServer
                     	String[] splitter = input.split(" ");
                     	int chosen_num = Integer.parseInt(splitter[1]);
                     	
+                    	if (chosen_num < 1 || chosen_num >9)
+                    	{
+                    		out.println("MESSAGE" + "@" + "The entered board position is invalid. Please try again" + "@" + active.getLabelText());
+                    	}
                     	
-                    	game.placeSign(chosen_num, "player");
+                    	else {
+                    	
+                    		game.placeSign(chosen_num, "player");
                            
                     	
-                    	boolean resetGame = this.checkServerWinner(game, result);
+                    		boolean resetGame = this.checkServerWinner(game, result);
                     	
                     	
-                    	if (resetGame == false)
-                    	{
-                    		Random rand = new Random();
-                			int index = rand.nextInt(9) + 1;
+                    		if (resetGame == false)
+                    		{
+                    			Random rand = new Random();
+                    			int index = rand.nextInt(9) + 1;
                 			
-                			boolean played = game.checkifPlayed(index);
+                    			boolean played = game.checkifPlayed(index);
                 			
-                			while(played)
-                			{
-                				index = rand.nextInt(9) + 1;
-                				played = game.checkifPlayed(index);
-                			}
+                    			while(played)
+                    			{
+                    				index = rand.nextInt(9) + 1;
+                    				played = game.checkifPlayed(index);
+                    			}
                     		
-                    		game.placeSign(index, "cpu");
+                    			game.placeSign(index, "cpu");
                     		
-                        	this.checkServerWinner(game, result);
+                    			this.checkServerWinner(game, result);
                         	
-                        	out.println("GAME" + "@" + game.getBoardSection(0));
-                        	out.println("GAME" + "@" + game.getBoardSection(1));
-                        	out.println("GAME" + "@" + game.getBoardSection(2));
-                        	out.println("GAME" + "@" + game.getBoardSection(3));
-                        	out.println("GAME" + "@" + game.getBoardSection(4));
-                    	}                	
+                    			out.println("GAME" + "@" + game.getBoardSection(0));
+                    			out.println("GAME" + "@" + game.getBoardSection(1));
+                    			out.println("GAME" + "@" + game.getBoardSection(2));
+                    			out.println("GAME" + "@" + game.getBoardSection(3));
+                    			out.println("GAME" + "@" + game.getBoardSection(4));
+                    		}                	
 
                     	                   	
-                    	out.println("GAME" + "@" + " ");
+                    		out.println("GAME" + "@" + " ");
                     	
                     		
-                    }
+                    	}}
                     
                     else if (input.toLowerCase().startsWith("/ping")) 
                     {
@@ -316,24 +322,29 @@ public class NewChatServer
                         writer.println("MESSAGE" + "@" + "User " + id + " is leaving the server" + "@" + active.getLabelText());
                     }
                     
-                    if (active.checkFirst(id) == true)
-                    {
-                    	while (true)
+                    try {
+                    
+                    	if (active.checkFirst(id) == true)
                     	{
-                    		active.removeCoordinator();
-                    		String newCoordinator = active.getCoordinator();
-                    		
-                    		if (active.checkID(newCoordinator) == true)
+                    		while (true)
                     		{
-                    			PrintWriter coordinator = active.getSpecificWriter(newCoordinator);
-                    			coordinator.println("COORDINATOR" + "@" + "You are now the new coordinator of the group" + "@" + "Chatter - User " + newCoordinator + " (Coordinator)");
-                    			break;
+                    			active.removeCoordinator();
+                    			String newCoordinator = active.getCoordinator();
+                    		
+                    			if (active.checkID(newCoordinator) == true)
+                    			{
+                    				PrintWriter coordinator = active.getSpecificWriter(newCoordinator);
+                    				coordinator.println("COORDINATOR" + "@" + "You are now the new coordinator of the group" + "@" + "Chatter - User " + newCoordinator + " (Coordinator)");
+                    				break;
+                    			}	
                     		}
                     	}
+                    } catch (Exception e)
+                    {
+                    	System.out.println(e);
                     }
-                }
                 try { socket.close(); } catch (IOException e) {}
             }
         }
     }
-}
+}}
