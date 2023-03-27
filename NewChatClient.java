@@ -126,6 +126,12 @@ public class NewChatClient {
                 	String time = getCurrentTime();
                 	gui.appendToMsg(line[1], time);
                 }
+
+                else if (line[0].equals("KICK"))
+                {
+                	String time = getCurrentTime();
+                	gui.appendToMsg(line[1], time);
+                }
                 
                 else if (line[0].equals("GAME")) {
                 	gui.appendGame(line[1]);

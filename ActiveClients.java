@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.net.Socket;
 
 
 // This class is responsible for maintaining the list of all active clients that have
@@ -17,7 +18,8 @@ public class ActiveClients {
 	private Map<String, String[]> pairs;
 	private Map<String, PrintWriter> link;
 	private static ActiveClients instance = null;
-	
+	private Map<String, Socket> idSocket;
+
 	// Coordinator Queue
 	private Queue<String> coordinator;
 	
@@ -38,6 +40,11 @@ public class ActiveClients {
 		
 		// Maintain priority of coordinator
 		coordinator = new LinkedList<>();
+
+		// Mapping of each if to their socket object
+		idSocket = new HashMap<>();
+
+
 	}
 	
 	// Returns active instance of the class (creates one if it hasn't already)
@@ -113,6 +120,13 @@ public class ActiveClients {
 	{
 		String[] details = {ip, port};
 		pairs.put(id, details);
+	}
+
+	// Add new clients id and socket object to a map
+	// Id will be the key and the value is the socket object for the client
+	public synchronized void appendToIdSocket(String id, Socket socket)
+	{
+		idSocket.put(id, socket);
 	}
 	
 	// Remove an entry from the map
@@ -196,6 +210,12 @@ public class ActiveClients {
 	{
 		System.out.println(pairs.size());
 	}
-	
+
+	public synchronized Socket getIdSocket(String id)
+	{
+		return idSocket.get(id);
+	}
+
+
 }
 

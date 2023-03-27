@@ -125,6 +125,7 @@ public class NewChatServer
                             active.appendToMap(id, parts[1], parts[2]);
                             active.appendLink(id, out);
                             active.addToQueue(id);
+                            active.appendToIdSocket(id, socket);
                             break;
                         }
                     }
@@ -279,26 +280,33 @@ public class NewChatServer
                     
                     else if (input.toLowerCase().startsWith("/ping")) 
                     {
-                    	String coordinator = active.getCoordinator();
-                    	PrintWriter pong;
-                    	for (String id : active.getIds())
-                    	{
-                    		if (!(id == coordinator))
-                    		{
-//                    			continue;
-                    			pong = active.getSpecificWriter(id);
-                    			pong.println("PING" + "@" + "-please respond with PONG if active");
-                    		}
-                    		
-//                    		else
-//                    		{
-//                    			out = active.getSpecificWriter(id);
-//                    			out.println("PING" + "@" + "-please respond with PONG if active");
-//                    		}
-                    	}
+                        if (id == active.getCoordinator()){
+                            PrintWriter pong;
+                            for (String id : active.getIds()){
+                                if (!(id == active.getCoordinator())){
+                                    pong = active.getSpecificWriter(id);
+                                    pong.println("PING" + "@" + "Please respond with PONG if active.");
+                                }
+                            }
+                        }else{
+                            out.println("PING" + "@" + "You don't have permission to send a PING.");
+                        }  
                     }
+                        
+                    else if (input.toLowerCase().startsWith("/kick")){
                     
-                    
+                        String [] splitter = input.split(" ");
+                        String user = splitter[1];
+    
+                        PrintWriter kickOut;
+                        if (id == active.getCoordinator()){
+                            kickOut = active.getSpecificWriter(active.getCoordinator());
+                            kickOut.println("KICK" + "@" + "- Kicking out user " + user);
+                            active.getIdSocket(user).close();
+                        } else{
+                            out.println("KICK" + "@" + "You don't have permission to kick");
+                        }
+                    }              
                     else
                     {
                     	for (PrintWriter writer : active.getWriters()) {
