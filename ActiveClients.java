@@ -41,7 +41,7 @@ public class ActiveClients {
 		// Maintain priority of coordinator
 		coordinator = new LinkedList<>();
 
-		// Mapping of each if to their socket object
+		// Mapping of each id to their socket object
 		idSocket = new HashMap<>();
 
 
@@ -218,6 +218,7 @@ public class ActiveClients {
 		System.out.println(pairs.size());
 	}
 
+	//getter method that return the socket object for each client in ther server by passing the user's id in the parameter
 	public synchronized Socket getIdSocket(String id)
 	{
 		return idSocket.get(id);

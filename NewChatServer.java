@@ -283,32 +283,50 @@ public class NewChatServer
                     		
                     	}}
                     
+                    //this block handles when the coordinator wants to broadcast a ping message to all clients in the server     
                     else if (input.toLowerCase().startsWith("/ping")) 
-                    {
+                    {   
+                        //checks if the coordinator is inputting the /ping command
                         if (id == active.getCoordinator()){
+                            // intialises the pong varaiable for the output stream of the ping message
                             PrintWriter pong;
+                            //loops through the list of every id in the server
                             for (String id : active.getIds()){
+                                //if block that executes only if id is not equal to the coordinators
                                 if (!(id == active.getCoordinator())){
+                                    //calls the active object to call the method getSpecificWriter from the ActiveClients class and passes the id as a parameter 
                                     pong = active.getSpecificWriter(id);
+                                    //outputs the pong message to the specific client called in the previous line
                                     pong.println("PING" + "@" + "Please respond with PONG if active.");
                                 }
                             }
+                        //block executes if a client who isn't the coordinator tries to use the /ping function
                         }else{
+                            //message displays to client who isn't coordinator that tries use the /ping function
                             out.println("PING" + "@" + "You don't have permission to send a PING.");
                         }  
                     }
-                        
+                    //this block handles when the coordinator wants to kick a client out of the server    
                     else if (input.toLowerCase().startsWith("/kick")){
-                    
+                        
+                        //splits the user input by a whitespace into a String list 
                         String [] splitter = input.split(" ");
+                        //as the user inputs a /ping "id", the list will contain two elements: /ping and the user's id. We store the user's id in this user variable
                         String user = splitter[1];
-    
+                        
+                        //intialises the kickOut varaiable for the output stream of the kick message
                         PrintWriter kickOut;
+                        //checks if the coordinator is inputting the /kick command
                         if (id == active.getCoordinator()){
+                            //calls the active object to call the method getSpecificWriter from the ActiveClients class and passes coordinator id as a parameter
                             kickOut = active.getSpecificWriter(active.getCoordinator());
+                            //outputs the kick message to the coordinatior on the confrimation of kicking out the user inputted by the coordinator
                             kickOut.println("KICK" + "@" + "- Kicking out user " + user);
+                            //gets the users id socket from the getIdSocket in the ActiveClients class using the active object and closes the socket hence kicking him out the server.
                             active.getIdSocket(user).close();
+                        //block executes if a client who isn't the coordinator tries to use the /kick function
                         } else{
+                            //message displays to client who isn't coordinator that tries use the /kick function
                             out.println("KICK" + "@" + "You don't have permission to kick");
                         }
                     }              
