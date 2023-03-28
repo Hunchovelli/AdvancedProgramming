@@ -92,7 +92,7 @@ public class ClientGUI extends JFrame {
     	return tabbedChats;
     }
     
-    
+    // Create a new tab for each private chat 
     public void createTab(String user)
     {
     	JTextArea private_chat = new JTextArea(16, 30);
@@ -100,7 +100,6 @@ public class ClientGUI extends JFrame {
 		
 		tabbedChats.addTab(user, private_chat);
     }
-    
     
     public int getTabIndex(String user)
     {
