@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.net.Socket;
 
 
 // This class is responsible for maintaining the list of all active clients that have
@@ -17,7 +18,8 @@ public class ActiveClients {
 	private Map<String, String[]> pairs;
 	private Map<String, PrintWriter> link;
 	private static ActiveClients instance = null;
-	
+	private Map<String, Socket> idSocket;
+
 	// Coordinator Queue
 	private Queue<String> coordinator;
 	
@@ -38,6 +40,11 @@ public class ActiveClients {
 		
 		// Maintain priority of coordinator
 		coordinator = new LinkedList<>();
+
+		// Mapping of each if to their socket object
+		idSocket = new HashMap<>();
+
+
 	}
 	
 	// Returns active instance of the class (creates one if it hasn't already)
@@ -57,6 +64,7 @@ public class ActiveClients {
 		this.getIDSize();
 	}
 	
+	// Get the list of ids
 	public synchronized Set<String> getIds()
 	{
 		return this.ids;
@@ -114,6 +122,13 @@ public class ActiveClients {
 		String[] details = {ip, port};
 		pairs.put(id, details);
 	}
+
+	// Add new clients id and socket object to a map
+	// Id will be the key and the value is the socket object for the client
+	public synchronized void appendToIdSocket(String id, Socket socket)
+	{
+		idSocket.put(id, socket);
+	}
 	
 	// Remove an entry from the map
 	public synchronized void removeMapID(String id)
@@ -146,21 +161,25 @@ public class ActiveClients {
 	    return "<html>" + users + "</html>";
 	}
 	
+	// Add an id to the dictionary 'link' and its value will be the relevant PrintWriter used to communicate with it
 	public synchronized void appendLink(String id, PrintWriter writer)
 	{
 		link.put(id, writer);
 	}
 	
+	// Get the PrintWriter of a specific client
 	public synchronized PrintWriter getSpecificWriter(String id)
 	{
 		return link.get(id);
 	}
 	
+	// Add each new client to the Coordinator Queue
 	public synchronized void addToQueue(String id)
 	{
 		coordinator.add(id);
 	}
-		
+	
+	// Check if the id is the coordinator in the queue
 	public synchronized boolean checkFirst(String id)
 	{
 		if (id.equals(coordinator.peek()))
@@ -170,11 +189,13 @@ public class ActiveClients {
 		return false;
 	}
 	
+	// Get the active coordinator
 	public synchronized String getCoordinator()
 	{
 		return coordinator.peek();
 	}
 	
+	// Remove the active coordinator
 	public synchronized void removeCoordinator()
 	{
 		coordinator.remove();
@@ -196,6 +217,12 @@ public class ActiveClients {
 	{
 		System.out.println(pairs.size());
 	}
-	
+
+	public synchronized Socket getIdSocket(String id)
+	{
+		return idSocket.get(id);
+	}
+
+
 }
 
