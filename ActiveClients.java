@@ -64,6 +64,7 @@ public class ActiveClients {
 		this.getIDSize();
 	}
 	
+	// Get the list of ids
 	public synchronized Set<String> getIds()
 	{
 		return this.ids;
@@ -160,21 +161,25 @@ public class ActiveClients {
 	    return "<html>" + users + "</html>";
 	}
 	
+	// Add an id to the dictionary 'link' and its value will be the relevant PrintWriter used to communicate with it
 	public synchronized void appendLink(String id, PrintWriter writer)
 	{
 		link.put(id, writer);
 	}
 	
+	// Get the PrintWriter of a specific client
 	public synchronized PrintWriter getSpecificWriter(String id)
 	{
 		return link.get(id);
 	}
 	
+	// Add each new client to the Coordinator Queue
 	public synchronized void addToQueue(String id)
 	{
 		coordinator.add(id);
 	}
-		
+	
+	// Check if the id is the coordinator in the queue
 	public synchronized boolean checkFirst(String id)
 	{
 		if (id.equals(coordinator.peek()))
@@ -184,11 +189,13 @@ public class ActiveClients {
 		return false;
 	}
 	
+	// Get the active coordinator
 	public synchronized String getCoordinator()
 	{
 		return coordinator.peek();
 	}
 	
+	// Remove the active coordinator
 	public synchronized void removeCoordinator()
 	{
 		coordinator.remove();

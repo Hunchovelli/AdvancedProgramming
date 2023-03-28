@@ -16,6 +16,8 @@ public class TicTacToe {
 			{"---", "+", "---", "+", "---"}, 
 			{" ", "   |", " ", "   |", " "}};
 	
+	
+	// Used to check the positions played by the two players
 	private ArrayList<Integer> player1Positions = new ArrayList<Integer>();
 	private ArrayList<Integer> player2Positions = new ArrayList<Integer>();
 	
@@ -28,11 +30,13 @@ public class TicTacToe {
 		this.player2 = player2;
 	}
 	
+	// Get matrix representation of the game board
 	public String[][] getMatrixBoard()
 	{
 		return gameBoard;
 	}
 	
+	// Get string representation of the game board
 	public String getStringBoard()
 	{
 		String board = "";
@@ -50,6 +54,8 @@ public class TicTacToe {
 		return board;
 	}
 	
+	// Get a section of the matrix
+	// Used by the server to get each section individually
 	public String getBoardSection(int index)
 	{
 		String section = "";
@@ -71,6 +77,7 @@ public class TicTacToe {
 		return section;
 	}
 	
+	// Used to place the relevant symbol based on the player and position
 	public void placeSign(int index, String user)
 	{
 		
@@ -122,6 +129,7 @@ public class TicTacToe {
 		}
 	}
 	
+	// Check if a particular position has already been played
 	public boolean checkifPlayed(int index)
 	{
 		if (player2Positions.contains(index) || player1Positions.contains(index))
@@ -132,6 +140,7 @@ public class TicTacToe {
 		return false;
 	}
 	
+	// Determine the result of the game
 	public String checkWinner()
 	{
 		List topRow = Arrays.asList(1, 2, 3);
@@ -175,6 +184,7 @@ public class TicTacToe {
 		return "";
 	}
 	
+	// Reset the board
 	public void resetBoard()
 	{
 		for (int i = 0; i < gameBoard.length; i++)
@@ -195,6 +205,11 @@ public class TicTacToe {
 	}
 	
 	
+//###########################################################################################################################################################################
+	
+	// THIS MAIN METHOD IS USED TO PLAY A GAME OF TIC TAC TOE BETWEEN 2 PLAYERS IN THE CONSOLE. YOU CAN UNCOMMENT IT TO TEST IT OUT.
+	
+//###########################################################################################################################################################################	
 	
 //	public static void main(String[] args)
 //	{

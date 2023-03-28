@@ -26,7 +26,7 @@ public class NewChatServer
 //     // The set of all the print writers for all the clients, used for broadcast.
 //    private static Set<PrintWriter> writers = new HashSet<>();
 	
-	// the singleton class ActiveClients is instantiated here and passed to each Thread Handler
+	// the singleton class ActiveClients is instantiated here
 	private static ActiveClients active = ActiveClients.getInstance();
 	
 
@@ -35,6 +35,8 @@ public class NewChatServer
         ExecutorService pool = Executors.newFixedThreadPool(500);
         try (ServerSocket listener = new ServerSocket(59001)) {
             while (true) {
+            	
+            	// the singleton instance of ActiveClients is passed here to be used for each client thread
                 pool.execute(new Handler(listener.accept(), active));
             }
         }
@@ -60,7 +62,7 @@ public class NewChatServer
             this.socket = socket;
         }
         
-        
+        // Method used to check the result of the TIC TIC TAC game played between the server and a client
         public boolean checkServerWinner(TicTacToe game, String result)
         {
         	result = game.checkWinner();
@@ -120,6 +122,7 @@ public class NewChatServer
                     }
                     synchronized (active) {
                     	
+                    	// The client details are stored within data structures of the singleton class
                         if (!id.isEmpty() && active.checkID(id)==false) {
                             active.addID(id);
                             active.appendToMap(id, parts[1], parts[2]);
@@ -229,6 +232,7 @@ public class NewChatServer
                     }
                     
                     
+                    // This block handles the Tic Tac Toe game played between the server and a client
                     else if (input.toLowerCase().startsWith("/play"))
                     {
                     	String result = "";
@@ -242,6 +246,7 @@ public class NewChatServer
                     	
                     	else {
                     	
+                    		// Note that the player is symbol 'X' while the server is symbol 'O'
                     		game.placeSign(chosen_num, "player");
                            
                     	
@@ -330,6 +335,7 @@ public class NewChatServer
                         writer.println("MESSAGE" + "@" + "User " + id + " is leaving the server" + "@" + active.getLabelText());
                     }
                     
+                    // This block is used to check if the coordinator has left the server, and if so, appoint a new coordinator
                     try {
                     
                     	if (active.checkFirst(id) == true)

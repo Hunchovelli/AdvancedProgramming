@@ -24,8 +24,11 @@ import java.time.LocalTime;
 public class NewChatClient {
 
     Scanner in;
-    PrintWriter out;    
+    PrintWriter out;  
+    
+    // This object manages all the GUI components of the client
     ClientGUI gui;
+    
     JFrame frame;
 
     public NewChatClient() {
@@ -35,15 +38,14 @@ public class NewChatClient {
         
         gui.getTextField().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-//                out.println(gui.getTextField().getText());
                 out.println(gui.getTextFieldText());
-//                gui.getTextField().setText("");
                 gui.setTextFieldText();
             }
         });
    
     } 
     
+    // Used to implement time stamps for each message
     public String getCurrentTime()
     {
     	LocalTime current = LocalTime.now();
@@ -77,7 +79,7 @@ public class NewChatClient {
             	
             	System.out.println(Arrays.toString(line));
             	
-                
+                // Processes output based on 'SUBMITNAME' token
                 if (line[0].equals("SUBMITNAME")) {
                 	id = gui.getName(frame);
                 	String group = id + " " + user_ip + " " + user_port;
@@ -85,12 +87,15 @@ public class NewChatClient {
                     
                 }
                 
+                // Processes output based on 'NAMEACCEPTED' token 
                 else if (line[0].equals("NAMEACCEPTED")) {
                     this.frame.setTitle("Chatter - " + line[1]);
                     gui.getTextField().setEditable(true);
                     gui.setLabelText(line[2]);
                 } 
                 
+                // Processes output based on 'MESSAGE' token
+                // This token primarily displays public client broadcasts in the chat window or some server notifications
                 else if (line[0].equals("MESSAGE")) {
                 	
                 	String time = getCurrentTime();
@@ -99,6 +104,8 @@ public class NewChatClient {
                 	System.out.println(getCurrentTime());
                 }
                 
+                // Processes output based on 'PRIVATE' token
+                // This token is used to process private message broadcasting between any two clients connected to the server
                 else if (line[0].equals("PRIVATE")) {
                 	String user = line[1];
                 	int tabIndex = gui.getTabIndex(user);
@@ -114,6 +121,8 @@ public class NewChatClient {
                 	
                 }
                 
+                // Processes output based on 'COORDINATOR' token
+                // This token is used to display the relevant message when a new coordinator has been selected
                 else if (line[0].equals("COORDINATOR"))
                 {
                 	String time = getCurrentTime();
@@ -121,6 +130,7 @@ public class NewChatClient {
                 	this.frame.setTitle(line[2]);
                 }
                 
+                // Processes output based on 'PING' token
                 else if (line[0].equals("PING"))
                 {
                 	String time = getCurrentTime();
@@ -133,6 +143,14 @@ public class NewChatClient {
                 	gui.appendToMsg(line[1], time);
                 }
                 
+                else if (line[0].equals("KICK"))
+                {
+                	String time = getCurrentTime();
+                	gui.appendToMsg(line[1], time);
+                }
+                
+                // Processes output based on 'GAME' token
+                // Used to display the TIC TAC TOE game to the client
                 else if (line[0].equals("GAME")) {
                 	gui.appendGame(line[1]);
                 }
